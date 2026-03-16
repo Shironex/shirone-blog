@@ -7,10 +7,11 @@ interface Props {
   pubDate: Date;
   tags: string[];
   slug: string;
+  readingTime: string;
   featured?: boolean;
 }
 
-const { title, description, pubDate, tags, slug, featured = false } = Astro.props;
+const { title, description, pubDate, tags, slug, readingTime, featured = false } = Astro.props;
 ---
 
 <a href={`/blog/${slug}/`} class="group block">
@@ -19,8 +20,10 @@ const { title, description, pubDate, tags, slug, featured = false } = Astro.prop
     'hover:border-amber-dim hover:bg-surface',
     featured && 'border-l-2 border-l-amber-dim',
   ]}>
-    <div class="mb-2 text-sm text-text-faint">
+    <div class="mb-2 flex items-center gap-2 text-sm text-text-faint">
       <FormattedDate date={pubDate} />
+      <span>&middot;</span>
+      <span>{readingTime}</span>
     </div>
     <h3 class:list={[
       'mb-2 font-semibold leading-snug tracking-tight transition-colors group-hover:text-amber',

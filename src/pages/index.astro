@@ -1,10 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PostCard from '../components/PostCard.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getReadingTime } from '../utils/reading-time';
 
 const posts = (await getCollection('blog'))
   .filter((post) => !post.data.draft)
@@ -49,7 +50,7 @@ const posts = (await getCollection('blog'))
       </section>
 
       <!-- Posts -->
-      <section>
+      <section class="mb-16">
         <h2
           class="mb-8 text-sm font-medium uppercase tracking-widest text-text-faint"
         >
@@ -68,11 +69,58 @@ const posts = (await getCollection('blog'))
                 pubDate={post.data.pubDate}
                 tags={post.data.tags}
                 slug={post.id}
+                readingTime={getReadingTime(post.body ?? '')}
                 featured={i === 0}
               />
             ))}
           </div>
         )}
+      </section>
+
+      <!-- About -->
+      <section class="border-t border-border pt-12">
+        <h2
+          class="mb-6 text-sm font-medium uppercase tracking-widest text-text-faint"
+        >
+          About
+        </h2>
+        <div class="space-y-3 text-sm leading-relaxed text-text-muted">
+          <p>
+            Hey, I'm <strong class="text-text">Kacper</strong> (Shirone online) — a full-stack developer from Poland.
+            I build products and developer tools in TypeScript, from UI and backend to deployment and infra.
+            Currently working on long-term projects around self-hosting, dev tooling, and AI-assisted workflows.
+          </p>
+          <p>
+            What I'm building right now:
+          </p>
+          <ul class="space-y-2">
+            <li>
+              <a href="https://github.com/Shironex/shiroani" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">ShiroAni</a>
+              <span class="text-text-faint"> — </span>Desktop anime tracking app with a built-in ad-free browser, Discord Rich Presence, and a community bot
+            </li>
+            <li>
+              <a href="https://github.com/Shironex/omniscribe" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">Omniscribe</a>
+              <span class="text-text-faint"> — </span>Run and manage up to 12 AI coding sessions in parallel, with per-session terminals, git worktrees, and MCP
+            </li>
+            <li>
+              <a href="https://github.com/Shironex/gitchorus" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">GitChorus</a>
+              <span class="text-text-faint"> — </span>AI-powered code review and issue validation with evidence-backed findings
+            </li>
+            <li>
+              <a href="https://github.com/Shironex/automaker" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">AutoMaker</a>
+              <span class="text-text-faint"> — </span>AI-powered automation platform for agentic workflows, orchestration, and multi-repo dev tooling
+            </li>
+          </ul>
+          <p>
+            This blog is where I write about the decisions, mistakes, and lessons learned from building these things.
+            No tutorials — just honest field notes.
+          </p>
+          <p class="pt-2">
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="text-text-faint transition-colors hover:text-text-muted">GitHub</a>
+            <span class="text-text-faint mx-2">&middot;</span>
+            <a href="https://discord.gg/shirone" target="_blank" rel="noopener noreferrer" class="text-text-faint transition-colors hover:text-text-muted">Discord</a>
+          </p>
+        </div>
       </section>
     </main>
     <Footer />

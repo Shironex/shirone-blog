@@ -16,7 +16,7 @@ const posts = (await getCollection('blog'))
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
-  <body class="min-h-screen bg-[var(--color-bg)]">
+  <body class="min-h-screen bg-bg">
     <Header />
 
     <!-- Ambient warm glow behind hero area -->
@@ -32,16 +32,16 @@ const posts = (await getCollection('blog'))
     <main class="relative mx-auto max-w-2xl px-6 py-16">
       <!-- Intro -->
       <section class="mb-16">
-        <p class="mb-3 text-sm text-[var(--color-text-faint)]">
+        <p class="mb-3 text-sm text-text-faint">
           Welcome to my corner of the internet
         </p>
         <h1
           class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl"
           style="font-family: var(--font-display);"
         >
-          Hey, I'm <span class="text-[var(--color-amber)]">Shirone</span>
+          Hey, I'm <span class="text-amber">Shirone</span>
         </h1>
-        <p class="max-w-lg text-lg leading-relaxed text-[var(--color-text-muted)]">
+        <p class="max-w-lg text-lg leading-relaxed text-text-muted">
           I build things for fun and occasionally write about the journey.
           Currently crafting an anime tracking app, wrangling Discord bots, and
           exploring whatever catches my eye.
@@ -51,12 +51,12 @@ const posts = (await getCollection('blog'))
       <!-- Posts -->
       <section>
         <h2
-          class="mb-8 text-sm font-medium uppercase tracking-widest text-[var(--color-text-faint)]"
+          class="mb-8 text-sm font-medium uppercase tracking-widest text-text-faint"
         >
           Writing
         </h2>
         {posts.length === 0 ? (
-          <p class="text-[var(--color-text-muted)]">
+          <p class="text-text-muted">
             Nothing here yet. First post is brewing...
           </p>
         ) : (

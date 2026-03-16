@@ -16,7 +16,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
     <BaseHead title={`${title} — shirone.blog`} description={description} image={heroImage} />
   </head>
 
-  <body class="min-h-screen bg-[var(--color-bg)]">
+  <body class="min-h-screen bg-bg">
     <Header />
 
     <!-- Cursor glow -->
@@ -28,11 +28,11 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
         <header class="mb-12">
           <a
             href="/"
-            class="mb-6 inline-flex items-center gap-1 text-sm text-[var(--color-text-faint)] transition-colors hover:text-[var(--color-text-muted)]"
+            class="mb-6 inline-flex items-center gap-1 text-sm text-text-faint transition-colors hover:text-text-muted"
           >
             &larr; Back
           </a>
-          <div class="mb-3 flex items-center gap-3 text-sm text-[var(--color-text-faint)]">
+          <div class="mb-3 flex items-center gap-3 text-sm text-text-faint">
             <FormattedDate date={pubDate} />
             {updatedDate && (
               <span class="italic">
@@ -49,7 +49,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
           {tags.length > 0 && (
             <div class="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <span class="text-sm text-[var(--color-sage)]">#{tag}</span>
+                <span class="text-sm text-sage">#{tag}</span>
               ))}
             </div>
           )}
@@ -57,7 +57,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 
         <!-- Hero image -->
         {heroImage && (
-          <div class="mb-12 overflow-hidden rounded-lg border border-[var(--color-border)]">
+          <div class="mb-12 overflow-hidden rounded-lg border border-border">
             <Image
               width={1020}
               height={510}

@@ -1,7 +1,7 @@
 ---
 title: 'Taming 12 Terminals: How We Stopped the UI from Freezing'
 description: 'Running 12 AI coding sessions at once means 12 terminals generating output simultaneously. Here is how we kept the UI responsive.'
-pubDate: '2026-03-16'
+pubDate: '2026-03-16T14:00:00'
 tags: ['electron', 'omniscribe', 'performance']
 ---
 

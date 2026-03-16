@@ -1,7 +1,7 @@
 ---
 title: 'Hello, World'
 description: 'The obligatory first post — why I started this blog, what to expect, and what I have been building lately.'
-pubDate: '2026-03-16'
+pubDate: '2026-03-10'
 tags: ['meta', 'intro']
 ---
 

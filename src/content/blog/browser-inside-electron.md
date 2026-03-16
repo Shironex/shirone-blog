@@ -1,7 +1,7 @@
 ---
 title: 'We Put a Browser Inside Electron (and Rewrote It Twice)'
 description: 'The story of building an embedded browser for an anime tracking app — from native overlays to DOM elements, z-index nightmares, and why the "deprecated" approach won.'
-pubDate: '2026-03-16'
+pubDate: '2026-03-16T10:00:00'
 tags: ['electron', 'shiroani', 'architecture']
 ---
 

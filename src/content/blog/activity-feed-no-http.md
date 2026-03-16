@@ -1,7 +1,7 @@
 ---
 title: 'Building an Activity Feed Without Opening a Single Port'
 description: 'How we built a "currently watching" feed for our Discord community — and why we ditched the HTTP endpoint in favor of something already running.'
-pubDate: '2026-03-16'
+pubDate: '2026-03-16T12:00:00'
 tags: ['discord', 'shiroani', 'architecture']
 ---
 

@@ -87,8 +87,8 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
         function animate() {
           x += (targetX - x) * 0.08;
           y += (targetY - y) * 0.08;
-          glow.style.left = `${x}px`;
-          glow.style.top = `${y}px`;
+          glow!.style.left = `${x}px`;
+          glow!.style.top = `${y}px`;
           requestAnimationFrame(animate);
         }
         animate();

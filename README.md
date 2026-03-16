@@ -1,62 +1,62 @@
-# Astro Starter Kit: Blog
+<div align="center">
+
+  <h1>shirone.blog</h1>
+
+  <p><strong>Field notes from building things — Electron apps, Discord bots, and whatever catches my curiosity next.</strong></p>
+
+  <p>
+    <a href="https://shirone.blog">
+      <img src="https://img.shields.io/website?url=https%3A%2F%2Fshirone.blog&style=flat&label=shirone.blog" alt="Website" />
+    </a>
+    <a href="https://github.com/Shironex/shirone-blog/actions/workflows/ci.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/Shironex/shirone-blog/ci.yml?style=flat&label=CI" alt="CI" />
+    </a>
+    <a href="https://shirone.blog/rss.xml">
+      <img src="https://img.shields.io/badge/RSS-feed-orange?style=flat" alt="RSS" />
+    </a>
+    <a href="LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-blue?style=flat" alt="License" />
+    </a>
+  </p>
+
+</div>
+
+---
+
+### Stack
+
+- **[Astro 6](https://astro.build)** — static site generator with MDX + React islands
+- **[Tailwind CSS v4](https://tailwindcss.com)** — styling with typography plugin
+- **Shiki** (vitesse-dark) — code syntax highlighting
+- **Docker** + **[Coolify](https://coolify.io)** — deployment
+
+### Development
 
 ```sh
-pnpm create astro@latest -- --template blog
+pnpm install
+pnpm dev          # localhost:4321
+pnpm build        # static output → ./dist/
+pnpm astro check  # typecheck
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### Writing a post
 
-Features:
+Create a `.md` or `.mdx` file in `src/content/blog/`:
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```yaml
+---
+title: 'Post Title'
+description: 'One-line summary.'
+pubDate: '2026-03-16'
+tags: ['electron', 'architecture']
+draft: false
+---
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Deployment
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+The `Dockerfile` builds a static site served by `serve` on port 3000. Point Coolify (or any Docker host) at the repo and set the domain.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+### License
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+MIT

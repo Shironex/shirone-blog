@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="public/mascot.png" alt="shirone.blog mascot" width="160" />
 
   <h1>shirone.blog</h1>
 

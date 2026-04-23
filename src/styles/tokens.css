@@ -1,0 +1,34 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  /* Editorial Dev Log — warm amber on deep warm-black */
+  --color-bg: #0b0a09;
+  --color-bg-soft: #151311;
+  --color-ink: #ece6dd;
+  --color-ink-dim: #9a928a;
+  --color-ink-mute: #625a52;
+  --color-line: #262320;
+
+  --color-accent: #e8b04a;
+  --color-accent-dim: color-mix(in oklch, #e8b04a 35%, transparent);
+
+  /* Legacy aliases still referenced by a few components */
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-ink-dim);
+  --color-text-faint: var(--color-ink-mute);
+  --color-surface: var(--color-bg-soft);
+  --color-surface-hover: #1c1916;
+  --color-border: var(--color-line);
+  --color-amber: var(--color-accent);
+  --color-amber-dim: color-mix(in oklch, var(--color-accent) 60%, transparent);
+  --color-sage: #a8bf80;
+
+  --font-serif: 'Fraunces', 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Kept so existing `var(--font-display)` / `var(--font-body)` references resolve */
+  --font-display: var(--font-serif);
+  --font-body: var(--font-sans);
+}

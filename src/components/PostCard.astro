@@ -1,6 +1,4 @@
 ---
-import FormattedDate from './FormattedDate.astro';
-
 interface Props {
   title: string;
   description: string;
@@ -8,38 +6,33 @@ interface Props {
   tags: string[];
   slug: string;
   readingTime: string;
-  featured?: boolean;
+  id: number;
 }
 
-const { title, description, pubDate, tags, slug, readingTime, featured = false } = Astro.props;
+const { title, description, pubDate, tags, slug, readingTime, id } = Astro.props;
+const month = pubDate.toLocaleDateString('en-us', { month: 'short' });
+const day = pubDate.toLocaleDateString('en-us', { day: 'numeric' });
+const year = pubDate.getFullYear();
+const idPadded = String(id).padStart(2, '0');
+const readMinutes = readingTime.replace(' min read', 'm');
 ---
 
-<a href={`/blog/${slug}/`} class="group block">
-  <article class:list={[
-    'rounded-lg border border-border p-6 transition-all duration-300',
-    'hover:border-amber-dim hover:bg-surface',
-    featured && 'border-l-2 border-l-amber-dim',
-  ]}>
-    <div class="mb-2 flex items-center gap-2 text-sm text-text-faint">
-      <FormattedDate date={pubDate} />
-      <span>&middot;</span>
-      <span>{readingTime}</span>
-    </div>
-    <h3 class:list={[
-      'mb-2 font-semibold leading-snug tracking-tight transition-colors group-hover:text-amber',
-      featured ? 'text-xl' : 'text-lg',
-    ]} style="font-family: var(--font-display);">
-      {title}
-    </h3>
-    <p class="mb-3 text-sm leading-relaxed text-text-muted">
-      {description}
-    </p>
+<a href={`/blog/${slug}/`} class="ed-row">
+  <div class="ed-row-date">
+    <span class="yr">{year}</span>
+    {`${month} ${day}`}
+  </div>
+  <div>
+    <h3 class="ed-row-title">{title}</h3>
+    <p class="ed-row-dek">{description}</p>
     {tags.length > 0 && (
-      <div class="flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <span class="text-xs text-sage">#{tag}</span>
-        ))}
+      <div class="ed-row-tags">
+        {tags.map((tag) => <span>#{tag}</span>)}
       </div>
     )}
-  </article>
+  </div>
+  <div class="ed-row-meta">
+    № {idPadded}
+    <span class="read">{readMinutes}</span>
+  </div>
 </a>

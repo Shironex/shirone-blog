@@ -9,25 +9,23 @@ import Header from '../components/Header.astro';
   <head>
     <BaseHead title="404 — shirone.blog" description="Page not found" />
   </head>
-  <body class="min-h-screen bg-bg">
+  <body>
     <Header />
-    <main class="mx-auto flex max-w-2xl flex-col items-start px-6 py-32">
-      <p class="mb-2 text-sm text-text-faint">404</p>
-      <h1
-        class="mb-4 text-3xl font-bold tracking-tight"
-        style="font-family: var(--font-display);"
-      >
-        Wrong turn
-      </h1>
-      <p class="mb-8 text-text-muted">
-        This page doesn't exist. Maybe it did once, maybe it never will.
-      </p>
-      <a
-        href="/"
-        class="text-sm text-amber transition-opacity hover:opacity-80"
-      >
-        &larr; Back home
-      </a>
+    <main class="ed-404">
+      <div class="ed-404-inner">
+        <div class="stamp">Error · IV · not found</div>
+        <p class="big">404</p>
+        <h2>This page has <em>gone missing</em>.</h2>
+        <p>
+          Perhaps the URL is mistyped, perhaps it was moved, perhaps it never
+          existed. The archive, however, remains.
+        </p>
+        <div class="links">
+          <a href="/">← Back to writing</a>
+          <a href="/tags">Browse tags</a>
+          <a href="/rss.xml">RSS feed</a>
+        </div>
+      </div>
     </main>
     <Footer />
   </body>

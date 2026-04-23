@@ -1,15 +1,27 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PostCard from '../components/PostCard.astro';
-import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getReadingTime } from '../utils/reading-time';
 
 const posts = (await getCollection('blog'))
   .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const [featured, ...rest] = posts;
+const totalWords = posts.reduce((sum, p) => {
+  const text = (p.body ?? '').replace(/```[\s\S]*?```/g, '').replace(/[#*_`>[\]()]/g, '');
+  return sum + text.trim().split(/\s+/).length;
+}, 0);
+
+const featuredMonth = featured?.data.pubDate.toLocaleDateString('en-us', { month: 'short' });
+const featuredDay = featured?.data.pubDate.toLocaleDateString('en-us', { day: 'numeric' });
+const featuredYear = featured?.data.pubDate.getFullYear();
+const featuredReading = featured ? getReadingTime(featured.body ?? '') : '';
+
 ---
 
 <!doctype html>
@@ -17,112 +29,78 @@ const posts = (await getCollection('blog'))
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
-  <body class="min-h-screen bg-bg">
+  <body>
     <Header />
 
-    <!-- Ambient warm glow behind hero area -->
-    <div
-      class="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2"
-      style="width: 600px; height: 400px; background: radial-gradient(ellipse, oklch(0.78 0.14 75 / 0.07) 0%, oklch(0.65 0.1 75 / 0.03) 40%, transparent 70%); filter: blur(40px);"
-      aria-hidden="true"
-    />
-
-    <!-- Cursor glow element -->
     <div class="cursor-glow hidden sm:block" id="cursor-glow" aria-hidden="true"></div>
 
-    <main class="relative mx-auto max-w-2xl px-6 py-16">
-      <!-- Intro -->
-      <section class="mb-16">
-        <p class="mb-3 text-sm text-text-faint">
-          Welcome to my corner of the internet
+    <main class="relative">
+      <!-- Hero -->
+      <section class="ed-hero">
+        <div class="ed-eyebrow">A field journal · No. {String(posts.length).padStart(2, '0')}</div>
+        <h1 class="ed-h1">The things <em>I build</em>, and the lessons that break first.</h1>
+        <p class="ed-lede">
+          <strong>Shirone.blog</strong> is where I write about the decisions,
+          mistakes, and lessons learned from building desktop apps,
+          AI-assisted dev tooling, and the small utilities that make them
+          survive production. No tutorials — just honest field notes.
         </p>
-        <h1
-          class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl"
-          style="font-family: var(--font-display);"
-        >
-          Hey, I'm <span class="text-amber">Shirone</span>
-        </h1>
-        <p class="max-w-lg text-lg leading-relaxed text-text-muted">
-          I build things for fun and occasionally write about the journey.
-          Currently crafting an anime tracking app, wrangling Discord bots, and
-          exploring whatever catches my eye.
-        </p>
-      </section>
-
-      <!-- Posts -->
-      <section class="mb-16">
-        <h2
-          class="mb-8 text-sm font-medium uppercase tracking-widest text-text-faint"
-        >
-          Writing
-        </h2>
-        {posts.length === 0 ? (
-          <p class="text-text-muted">
-            Nothing here yet. First post is brewing...
-          </p>
-        ) : (
-          <div class="flex flex-col gap-4">
-            {posts.map((post, i) => (
-              <PostCard
-                title={post.data.title}
-                description={post.data.description}
-                pubDate={post.data.pubDate}
-                tags={post.data.tags}
-                slug={post.id}
-                readingTime={getReadingTime(post.body ?? '')}
-                featured={i === 0}
-              />
-            ))}
+        <div class="ed-byline">
+          <div class="avatar" aria-hidden="true">S</div>
+          <div>
+            <div class="name">Kacper · <span class="accent">Shirone</span></div>
+            <div>Poland · updated regularly</div>
           </div>
-        )}
-      </section>
-
-      <!-- About -->
-      <section class="border-t border-border pt-12">
-        <h2
-          class="mb-6 text-sm font-medium uppercase tracking-widest text-text-faint"
-        >
-          About
-        </h2>
-        <div class="space-y-3 text-sm leading-relaxed text-text-muted">
-          <p>
-            Hey, I'm <strong class="text-text">Kacper</strong> (Shirone online) — a full-stack developer from Poland.
-            I build products and developer tools in TypeScript, from UI and backend to deployment and infra.
-            Currently working on long-term projects around self-hosting, dev tooling, and AI-assisted workflows.
-          </p>
-          <p>
-            What I'm building right now:
-          </p>
-          <ul class="space-y-2">
-            <li>
-              <a href="https://github.com/Shironex/shiroani" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">ShiroAni</a>
-              <span class="text-text-faint"> — </span>Desktop anime tracking app with a built-in ad-free browser, Discord Rich Presence, and a community bot
-            </li>
-            <li>
-              <a href="https://github.com/Shironex/omniscribe" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">Omniscribe</a>
-              <span class="text-text-faint"> — </span>Run and manage up to 12 AI coding sessions in parallel, with per-session terminals, git worktrees, and MCP
-            </li>
-            <li>
-              <a href="https://github.com/Shironex/gitchorus" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">GitChorus</a>
-              <span class="text-text-faint"> — </span>AI-powered code review and issue validation with evidence-backed findings
-            </li>
-            <li>
-              <a href="https://github.com/Shironex/automaker" target="_blank" rel="noopener noreferrer" class="font-medium text-amber hover:opacity-80">AutoMaker</a>
-              <span class="text-text-faint"> — </span>AI-powered automation platform for agentic workflows, orchestration, and multi-repo dev tooling
-            </li>
-          </ul>
-          <p>
-            This blog is where I write about the decisions, mistakes, and lessons learned from building these things.
-            No tutorials — just honest field notes.
-          </p>
-          <p class="pt-2">
-            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="text-text-faint transition-colors hover:text-text-muted">GitHub</a>
-            <span class="text-text-faint mx-2">&middot;</span>
-            <a href="https://discord.gg/AsuZuSpE" target="_blank" rel="noopener noreferrer" class="text-text-faint transition-colors hover:text-text-muted">Discord</a>
-          </p>
         </div>
       </section>
+
+      <!-- Featured latest post -->
+      {featured && (
+        <section class="ed-featured">
+          <a href={`/blog/${featured.id}/`}>
+            <div class="ed-featured-body">
+              <h2 class="ed-featured-title">{featured.data.title}</h2>
+              <p class="ed-featured-dek">{featured.data.description}</p>
+              <div class="ed-featured-meta">
+                <span>{`${featuredMonth} ${featuredDay}, ${featuredYear}`}</span>
+                <span class="dot" />
+                <span>{featuredReading}</span>
+                <span class="dot" />
+                <span>{featured.data.tags.map((t) => '#' + t).join(' · ')}</span>
+              </div>
+            </div>
+          </a>
+        </section>
+      )}
+
+      <!-- Archive -->
+      <div class="ed-section-head">
+        <h2>The archive</h2>
+        <div class="count">
+          {String(posts.length).padStart(2, '0')} pieces · {totalWords.toLocaleString()} words
+        </div>
+      </div>
+
+      <div class="ed-index">
+        {rest.length === 0 ? (
+          <p class="ed-row-dek" style="padding: 24px 0;">Nothing else archived yet.</p>
+        ) : (
+          rest.map((post, i) => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              slug={post.id}
+              readingTime={getReadingTime(post.body ?? '')}
+              id={i + 2}
+            />
+          ))
+        )}
+      </div>
+
     </main>
+
     <Footer />
 
     <script>

@@ -8,27 +8,45 @@ export async function getStaticPaths() {
     .filter((p) => !p.data.draft)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-  return posts.map((post, i) => ({
-    params: { slug: post.id },
-    props: {
-      post,
-      prev: posts[i + 1] ? { slug: posts[i + 1].id, title: posts[i + 1].data.title } : undefined,
-      next: posts[i - 1] ? { slug: posts[i - 1].id, title: posts[i - 1].data.title } : undefined,
-    },
-  }));
+  return posts.map((post, i) => {
+    const body = post.body ?? '';
+    const text = body.replace(/```[\s\S]*?```/g, '').replace(/[#*_`>[\]()]/g, '');
+    const totalWords = text.trim().split(/\s+/).length;
+
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        id: i + 1,
+        totalWords,
+        prev: posts[i + 1] ? { slug: posts[i + 1].id, title: posts[i + 1].data.title } : undefined,
+        next: posts[i - 1] ? { slug: posts[i - 1].id, title: posts[i - 1].data.title } : undefined,
+      },
+    };
+  });
 }
 
 interface Props {
   post: CollectionEntry<'blog'>;
+  id: number;
+  totalWords: number;
   prev?: { slug: string; title: string };
   next?: { slug: string; title: string };
 }
 
-const { post, prev, next } = Astro.props;
+const { post, prev, next, id, totalWords } = Astro.props;
 const { Content, headings } = await render(post);
 const readingTime = getReadingTime(post.body ?? '');
 ---
 
-<BlogPost {...post.data} headings={headings} readingTime={readingTime} prev={prev} next={next}>
+<BlogPost
+  {...post.data}
+  id={id}
+  totalWords={totalWords}
+  headings={headings}
+  readingTime={readingTime}
+  prev={prev}
+  next={next}
+>
   <Content />
 </BlogPost>

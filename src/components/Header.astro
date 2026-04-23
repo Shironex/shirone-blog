@@ -1,29 +1,19 @@
 ---
 const pathname = Astro.url.pathname;
+const isHome = pathname === '/' || pathname.startsWith('/blog');
+const isAbout = pathname === '/about' || pathname.startsWith('/about');
+const isTags = pathname.startsWith('/tags');
 ---
 
-<header class="sticky top-0 z-50 border-b border-border bg-bg">
-  <nav class="mx-auto flex max-w-2xl items-center justify-between px-6 py-4">
-    <a href="/" class="group flex items-baseline gap-0.5 text-lg font-semibold tracking-tight no-underline" style="font-family: var(--font-display);">
-      <span class="text-amber transition-opacity group-hover:opacity-80">shirone</span><span class="text-text-faint">.blog</span>
-    </a>
-    <div class="flex items-center gap-6 text-sm">
-      <a
-        href="/"
-        class:list={[
-          'transition-colors hover:text-amber',
-          pathname === '/' ? 'text-amber' : 'text-text-muted',
-        ]}
-      >
-        Posts
-      </a>
-      <a
-        href="/rss.xml"
-        class="text-text-muted transition-colors hover:text-amber"
-        title="RSS Feed"
-      >
-        RSS
-      </a>
-    </div>
-  </nav>
-</header>
+<nav class="ed-nav" aria-label="Primary">
+  <a href="/" class="ed-nav-left">
+    shirone<span class="dot">.</span><b>blog</b>
+  </a>
+  <div class="ed-nav-center">Est. MMXXVI · Poland</div>
+  <div class="ed-nav-right">
+    <a href="/" class:list={[isHome && 'on']}>Writing</a>
+    <a href="/about" class:list={[isAbout && 'on']}>About</a>
+    <a href="/tags" class:list={[isTags && 'on']}>Tags</a>
+    <a href="/rss.xml">RSS</a>
+  </div>
+</nav>

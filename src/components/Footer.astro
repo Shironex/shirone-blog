@@ -3,16 +3,11 @@ import { GITHUB_URL } from '../consts';
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-border px-6 py-12">
-  <div class="mx-auto flex max-w-2xl items-center justify-between text-sm text-text-faint">
-    <span>&copy; {year} Shirone</span>
-    <a
-      href={GITHUB_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="transition-colors hover:text-text-muted"
-    >
-      GitHub
-    </a>
+<footer class="ed-footer">
+  <div>© {year} · Shirone · Set in Fraunces &amp; JetBrains Mono</div>
+  <div class="links">
+    <a href="/rss.xml">RSS</a>
+    <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://discord.gg/AsuZuSpE" target="_blank" rel="noopener noreferrer">Discord</a>
   </div>
 </footer>

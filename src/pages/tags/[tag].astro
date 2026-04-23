@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getReadingTime } from '../../utils/reading-time';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+  const tagSet = new Set<string>();
+  for (const post of posts) {
+    for (const tag of post.data.tags) tagSet.add(tag);
+  }
+  return Array.from(tagSet).map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+
+const allPosts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const counts = new Map<string, number>();
+for (const post of allPosts) {
+  for (const t of post.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+}
+const tagEntries = Array.from(counts.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+const filtered = allPosts.filter((p) => p.data.tags.includes(tag!));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`#${tag} — shirone.blog`}
+      description={`Posts tagged #${tag}.`}
+    />
+  </head>
+  <body>
+    <Header />
+
+    <main>
+      <section class="ed-tag-hero">
+        <div class="ed-tag-eyebrow">Archive · filtered view</div>
+        <h1 class="ed-tag-h1">Everything tagged <em>#{tag}</em></h1>
+        <p class="ed-tag-sub">
+          {filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'} in this thread.
+        </p>
+      </section>
+
+      <div class="ed-tags-cloud">
+        <a class="ed-tag-chip on" href={`/tags/${tag}`}>
+          #{tag} <span class="n">{filtered.length}</span>
+        </a>
+        {tagEntries
+          .filter(([t]) => t !== tag)
+          .map(([t, n]) => (
+            <a class="ed-tag-chip" href={`/tags/${t}`}>
+              #{t} <span class="n">{n}</span>
+            </a>
+          ))}
+      </div>
+
+      <div class="ed-index" style="margin-top: 40px;">
+        {filtered.map((post, i) => {
+          const originalIndex = allPosts.findIndex((p) => p.id === post.id);
+          return (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              slug={post.id}
+              readingTime={getReadingTime(post.body ?? '')}
+              id={originalIndex + 1}
+            />
+          );
+        })}
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>

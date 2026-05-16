@@ -13,7 +13,8 @@
   },
   "pnpm": {
     "overrides": {
-      "yaml": ">=2.8.3"
+      "yaml": ">=2.8.3",
+      "devalue": ">=5.8.1"
     }
   },
   "dependencies": {

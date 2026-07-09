@@ -1,6 +1,6 @@
 ---
 title: 'From if-statements to Plugins in 17 Days'
-description: 'How we extracted a hardcoded AI provider into a plugin architecture with 57 documented decisions, and why we chose bundled plugins over a marketplace.'
+description: 'How I extracted a hardcoded AI provider into a plugin architecture with 57 documented decisions, and why I chose bundled plugins over a marketplace.'
 pubDate: '2026-03-15'
 tags: ['architecture', 'omniscribe', 'plugins']
 ---
@@ -25,11 +25,11 @@ if (aiMode === 'claude') {
 
 `SessionLauncherService`, `CliCommandService`, `UsageService`, `SessionGateway`, the frontend settings, the status display -- all had Claude baked in. Adding a provider meant modifying every file that touched sessions. That is the textbook definition of shotgun surgery.
 
-We counted: **6 services with provider-specific branching**, **3 frontend components with hardcoded Claude imports**, and a `type AiMode = 'claude' | 'plain'` union that would grow with every provider.
+I counted: **6 services with provider-specific branching**, **3 frontend components with hardcoded Claude imports**, and a `type AiMode = 'claude' | 'plain'` union that would grow with every provider.
 
 ## 57 decisions before writing code
 
-We did not start coding. We started planning.
+I did not start coding. I started planning.
 
 The v3 milestone produced **28 execution plans across 5 phases**, with 57 documented architectural decisions. Some were small (activation event naming). Some shaped everything.
 
@@ -41,7 +41,7 @@ Decision v3-D1 was the big one -- plugin distribution model:
 | Bundled plugins with in-app toggle | Ship tested code, zero security surface, instant load | No community plugins, all providers first-party |
 | Hybrid (bundled + verified marketplace) | Best of both | Complexity of both, premature for 2 providers |
 
-Stability won. Bundled plugins with in-app enable/disable toggles. The API is designed external-ready (typed interfaces, JSDoc, base classes with sensible defaults), but the distribution is locked to first-party packages. We can open it later without rewriting the contracts.
+Stability won. Bundled plugins with in-app enable/disable toggles. The API is designed external-ready (typed interfaces, JSDoc, base classes with sensible defaults), but the distribution is locked to first-party packages. It can be opened up later without rewriting the contracts.
 
 Other decisions that mattered:
 
@@ -177,7 +177,7 @@ One line. No branching. The registry handles dispatch.
 
 Phase 15 was the validation. If the architecture actually works, adding a second provider should not require touching core.
 
-`@omniscribe/provider-codex` took **6 plans** and plugged into the same infrastructure. The differences told us the abstraction was right:
+`@omniscribe/provider-codex` took **6 plans** and plugged into the same infrastructure. The differences told me the abstraction was right:
 
 | Feature | Claude | Codex |
 |---------|--------|-------|
@@ -209,16 +209,16 @@ The Codex plugin class is 189 lines. It extends `BaseProviderPlugin`, implements
 
 ## What I would do differently
 
-**Start with two providers.** We designed the API by looking at Claude, then validated with Codex. Some Codex-specific patterns (JSON-RPC usage fetching, missing session history) forced late adjustments to the capability system. If we had spiked both providers first, the `ProviderCapabilities` interface would have been right on the first draft.
+**Start with two providers.** I designed the API by looking at Claude, then validated with Codex. Some Codex-specific patterns (JSON-RPC usage fetching, missing session history) forced late adjustments to the capability system. Had I spiked both providers first, the `ProviderCapabilities` interface would have been right on the first draft.
 
 **Frontend extensions are harder than backend.** The backend plugin system is clean -- registry, dispatch, done. The frontend extension system (slot-based injection, dynamic settings navigation, runtime theme registration) took 6 plans and produced the most bugs. React component lifecycle and plugin lifecycle do not align naturally.
 
-**Planning documents pay for themselves.** 28 plans and 57 decisions sounds like overhead. It was not. Every plan had success criteria. Every decision had a recorded rationale. When Phase 13 (the extraction) broke 12 test files, we could trace exactly which requirement each test mapped to and fix them systematically. No guessing, no archaeology.
+**Planning documents pay for themselves.** 28 plans and 57 decisions sounds like overhead. It was not. Every plan had success criteria. Every decision had a recorded rationale. When Phase 13 (the extraction) broke 12 test files, I could trace exactly which requirement each test mapped to and fix them systematically. No guessing, no archaeology.
 
 ## Lessons
 
-1. **If you have two if-statements, you have a plugin system trying to get out.** We had 6. The refactor was overdue.
+1. **If you have two if-statements, you have a plugin system trying to get out.** I had 6. The refactor was overdue.
 2. **Bundled plugins are a legitimate architecture.** Not everything needs a marketplace. Ship tested code, add the download system when you actually have third-party authors.
 3. **Capability flags beat feature detection.** Providers declare what they support upfront. The core never tries to call a method and catches the error -- it checks the capability first.
 4. **Type-safe allowlists are worth the ceremony.** The `ALLOWED_PROVIDER_INVOKE_METHODS` Set is 15 lines of type machinery. It has prevented every prototype traversal attack by construction, and it breaks at compile time if the interface changes.
-5. **Plan the extraction before you start moving files.** The 5-phase structure meant we never had a half-migrated codebase. Each phase shipped a working app with its own test suite passing.
+5. **Plan the extraction before you start moving files.** The 5-phase structure meant there was never a half-migrated codebase. Each phase shipped a working app with its own test suite passing.

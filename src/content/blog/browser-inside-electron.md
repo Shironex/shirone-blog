@@ -1,13 +1,13 @@
 ---
-title: 'We Put a Browser Inside Electron (and Rewrote It Twice)'
+title: 'I Put a Browser Inside Electron (and Rewrote It Twice)'
 description: 'The story of building an embedded browser for an anime tracking app — from native overlays to DOM elements, z-index nightmares, and why the "deprecated" approach won.'
 pubDate: '2026-03-16T10:00:00'
 tags: ['electron', 'shiroani', 'architecture']
 ---
 
-We put a browser inside an Electron app, and it only took rewriting it twice to get it right.
+I put a browser inside an Electron app, and it only took rewriting it twice to get it right.
 
-ShiroAni is an anime tracking desktop app. Users watch anime on Polish community sites like ogladajanime.pl and shinden.pl — so instead of making people alt-tab between a tracker and a browser, we embedded one. Open a tab, watch your show, and the app tracks it automatically. Your Discord status even updates with what you're watching.
+ShiroAni is an anime tracking desktop app. Users watch anime on Polish community sites like ogladajanime.pl and shinden.pl — so instead of making people alt-tab between a tracker and a browser, I embedded one. Open a tab, watch your show, and the app tracks it automatically. Your Discord status even updates with what you're watching.
 
 Sounds simple enough. It was not.
 
@@ -15,7 +15,7 @@ Sounds simple enough. It was not.
 
 Electron's recommended approach for embedding web content is `WebContentsView` — a native view that renders a separate web page. Each browser tab gets its own `WebContentsView` instance, managed in the main process. This is the "proper" Electron architecture. Separate processes, clean boundaries, security isolation.
 
-We built it. A 555-line `BrowserManager` class in the main process, managing a `Map<string, ManagedTab>`. Fifteen IPC handlers covering every operation — open tab, close tab, switch tab, navigate, go back, go forward, reload, resize, hide, show, reorder, get state, execute script, and more.
+I built it. A 555-line `BrowserManager` class in the main process, managing a `Map<string, ManagedTab>`. Fifteen IPC handlers covering every operation — open tab, close tab, switch tab, navigate, go back, go forward, reload, resize, hide, show, reorder, get state, execute script, and more.
 
 It worked. For about two days.
 
@@ -72,7 +72,7 @@ Every. Single. State. Change. Across the process boundary. With all the race con
 
 ### The straw that broke it
 
-Over twelve commits in two days, we kept layering features: tab persistence, HTML5 fullscreen, `executeScript` for page metadata scraping, tab reordering, favicon tracking. Each feature added more IPC handlers and more state sync complexity. The browser manager grew to 555 lines with 15 IPC handlers.
+Over twelve commits in two days, I kept layering features: tab persistence, HTML5 fullscreen, `executeScript` for page metadata scraping, tab reordering, favicon tracking. Each feature added more IPC handlers and more state sync complexity. The browser manager grew to 555 lines with 15 IPC handlers.
 
 The fullscreen support alone was absurd. When a video player entered HTML5 fullscreen, the main process had to: set `mainWindow.setFullScreen(true)`, resize the view to cover the entire screen, and tell the renderer to hide its chrome. When exiting, it had to *guess* the chrome dimensions using those magic pixel numbers while waiting for the `ResizeObserver` to catch up.
 
@@ -84,7 +84,7 @@ Electron has another way to embed web content: the `<webview>` tag. It's technic
 
 A DOM element that participates in CSS layout. That respects `display: none`. That lives in the React component tree. That you can reference with a ref and call methods on directly.
 
-We rewrote the entire browser in a single commit.
+I rewrote the entire browser in a single commit.
 
 ### The contrast is absurd
 
@@ -194,11 +194,11 @@ mainWindow.webContents.on('will-attach-webview', (_event, prefs) => {
 
 Two things stand out:
 - `allowRunningInsecureContent = true` because anime sites frequently load HTTP resources from HTTPS pages. Welcome to the real web.
-- We explicitly *don't* enable sandbox mode. macOS sandboxed renderers break cross-origin iframes, which are essential for embedded video players. Discovered the hard way.
+- I explicitly *don't* enable sandbox mode. macOS sandboxed renderers break cross-origin iframes, which are essential for embedded video players. Discovered the hard way.
 
 ### Discord knows what you're watching
 
-The fun payoff: since tabs live in the renderer, we can read their URLs directly. A `detectAnimeFromUrl()` function pattern-matches against known anime sites:
+The fun payoff: since tabs live in the renderer, the app can read their URLs directly. A `detectAnimeFromUrl()` function pattern-matches against known anime sites:
 
 ```typescript
 // ogladajanime.pl: /anime/naruto-shippuuden/player/12345
@@ -222,9 +222,9 @@ The entire detection pipeline runs in the renderer. No IPC. Just reading a DOM e
 
 **The IPC tax is real.** Every process boundary crossing adds latency, complexity, and race conditions. Fifteen IPC handlers is a smell. Two is right.
 
-**"Deprecated" doesn't mean "wrong."** The `<webview>` tag is deprecated because Electron wants people to use `WebContentsView`. But for our use case — a DOM element that renders web content within a React layout — webview is objectively the better tool. Sometimes the deprecated API is the one that actually solves your problem.
+**"Deprecated" doesn't mean "wrong."** The `<webview>` tag is deprecated because Electron wants people to use `WebContentsView`. But for my use case — a DOM element that renders web content within a React layout — webview is objectively the better tool. Sometimes the deprecated API is the one that actually solves your problem.
 
-**Rewrite early.** We caught the architecture mismatch two days in. If we'd waited longer and built more features on top of the native overlay approach, the migration would have been much more painful. The best time to rewrite a bad foundation is before you've built too much on it.
+**Rewrite early.** I caught the architecture mismatch two days in. If I'd waited longer and built more features on top of the native overlay approach, the migration would have been much more painful. The best time to rewrite a bad foundation is before you've built too much on it.
 
 ---
 

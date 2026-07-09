@@ -1,6 +1,6 @@
 ---
-title: 'Taming 12 Terminals: How We Stopped the UI from Freezing'
-description: 'Running 12 AI coding sessions at once means 12 terminals generating output simultaneously. Here is how we kept the UI responsive.'
+title: 'Taming 12 Terminals: How I Stopped the UI from Freezing'
+description: 'Running 12 AI coding sessions at once means 12 terminals generating output simultaneously. Here is how I kept the UI responsive.'
 pubDate: '2026-03-16T14:00:00'
 tags: ['electron', 'omniscribe', 'performance']
 ---
@@ -11,7 +11,7 @@ The naive version froze the UI within seconds.
 
 ## The firehose problem
 
-Each `node-pty` instance fires an `onData` callback for every chunk the PTY produces. During heavy output — think `npm install` or a large git diff — a single terminal can fire dozens of events per second. Multiply by 12, and the renderer was drowning in `xterm.write()` calls. We measured roughly 250 writes per second across all terminals during peak bursts.
+Each `node-pty` instance fires an `onData` callback for every chunk the PTY produces. During heavy output — think `npm install` or a large git diff — a single terminal can fire dozens of events per second. Multiply by 12, and the renderer was drowning in `xterm.write()` calls. I measured roughly 250 writes per second across all terminals during peak bursts.
 
 Every `write()` triggers xterm.js's parser, which updates the buffer, which triggers a render. At 250/sec, the browser's main thread had no breathing room for anything else — no mouse events, no tab switching, no scrolling. The app looked frozen even though every terminal was technically working.
 
@@ -60,7 +60,7 @@ private flushOutput(sessionId: number): void {
 }
 ```
 
-The 512KB cap on `outputBuffer` is a safety valve. If output arrives faster than we can flush (backpressure scenario), we keep only the most recent 512KB rather than letting memory grow unbounded. Data is lost, but the alternative is the process running out of heap.
+The 512KB cap on `outputBuffer` is a safety valve. If output arrives faster than the flush loop can drain it (backpressure scenario), only the most recent 512KB is kept rather than letting memory grow unbounded. Data is lost, but the alternative is the process running out of heap.
 
 ## Frontend: one write per frame
 
@@ -85,19 +85,19 @@ const handleOutput = useCallback((data: string) => {
 }, [isDisposedRef, isActiveRef, flushWriteBuffer]);
 ```
 
-Multiple socket events between frames get concatenated into `writeBufferRef`, then written as a single `xterm.write()` call on the next animation frame. This dropped us from ~250 writes/sec to ~60 — one per frame per terminal.
+Multiple socket events between frames get concatenated into `writeBufferRef`, then written as a single `xterm.write()` call on the next animation frame. That dropped the rate from ~250 writes/sec to ~60 — one per frame per terminal.
 
 The real win is hidden terminals. When a terminal tab is not visible, `isActiveRef` is false, and RAF scheduling stops entirely. Data still accumulates in the buffer (capped at 1MB), but zero CPU goes to parsing or rendering it. When the user switches back, `flushBuffer()` fires a single RAF to write everything at once.
 
 ### The newline trick
 
-That buffer trimming deserves a closer look. When we slice to the last 1MB of output, we might cut in the middle of an ANSI escape sequence like `\x1b[38;2;255;128;0m`. Writing a partial escape to xterm.js corrupts the parser state — you get garbled colors that persist for the rest of the session. Trimming to the next newline boundary avoids this because escape sequences don't span lines.
+That buffer trimming deserves a closer look. Slicing to the last 1MB of output can cut in the middle of an ANSI escape sequence like `\x1b[38;2;255;128;0m`. Writing a partial escape to xterm.js corrupts the parser state — you get garbled colors that persist for the rest of the session. Trimming to the next newline boundary avoids this because escape sequences don't span lines.
 
 ## Backpressure: when output wins
 
 Sometimes output genuinely overwhelms the pipe. An AI session running `cat` on a 10MB log, or a test suite with verbose logging, can produce data faster than the throttle-and-batch pipeline can drain it.
 
-The backend supports explicit PTY pause/resume. When the frontend detects backpressure (buffer hitting capacity), it signals the backend, which calls `session.pty.pause()`. This triggers kernel-level flow control — the child process's writes to stdout will block until we resume. No data is lost, but the AI session effectively stalls until the pipe drains.
+The backend supports explicit PTY pause/resume. When the frontend detects backpressure (buffer hitting capacity), it signals the backend, which calls `session.pty.pause()`. This triggers kernel-level flow control — the child process's writes to stdout will block until the session is resumed. No data is lost, but the AI session effectively stalls until the pipe drains.
 
 ```typescript
 pause(sessionId: number): void {
@@ -194,7 +194,7 @@ Large writes (> 1000 chars) are chunked into 100-char pieces with `setImmediate`
 
 Total memory budget per terminal in the worst case: 512KB backend buffer + 500KB scrollback + 1MB frontend hidden buffer = ~2MB. For 12 terminals, that's 24MB. Acceptable.
 
-## What we learned
+## What I learned
 
 **Throttle at the source.** The temptation is to fix everything in the renderer. But if you're already sending 250 socket events/sec, no amount of frontend optimization makes that cheap. The 32ms timer on the backend cut the event count before it ever hit the IPC bridge.
 
@@ -202,4 +202,4 @@ Total memory budget per terminal in the worst case: 512KB backend buffer + 500KB
 
 **Backpressure is a feature, not a failure.** The instinct is to buffer everything and never lose data. But unbounded buffers just convert a performance problem into a memory problem. Cap the buffer, pause the source, tell the user what's happening.
 
-**Retry, don't assume.** Container dimensions in a grid layout are non-deterministic during mount. Waiting for "ready" events is fragile. A retry loop with exponential backoff is ugly but reliable. The 20-retry RAF loop handles every edge case we've thrown at it — panel resizes, drag-and-drop reorders, animation delays.
+**Retry, don't assume.** Container dimensions in a grid layout are non-deterministic during mount. Waiting for "ready" events is fragile. A retry loop with exponential backoff is ugly but reliable. The 20-retry RAF loop handles every edge case I've thrown at it — panel resizes, drag-and-drop reorders, animation delays.

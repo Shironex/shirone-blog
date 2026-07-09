@@ -1,5 +1,5 @@
 ---
-title: 'Your Electron App Is Leaking Secrets (and How We Fixed It)'
+title: 'Your Electron App Is Leaking Secrets (and How I Fixed It)'
 description: 'When you spawn a subprocess, it inherits every environment variable — including API keys, tokens, and passwords. Most apps do nothing about this.'
 pubDate: '2026-03-11'
 tags: ['security', 'electron', 'omniscribe']
@@ -15,7 +15,7 @@ I got 97. Ninety-seven environment variables, including `ANTHROPIC_API_KEY`, `GI
 
 Now here's the thing: when your Electron app calls `child_process.spawn()`, every single one of those variables is inherited by the child process. By default. No opt-in. No warning.
 
-## Where this actually bit us
+## Where this actually bit me
 
 [Omniscribe](https://github.com/Shironex/omniscribe) is a desktop app that spawns terminal sessions — shells, AI agents, git commands. The terminal service uses `node-pty` to create pseudo-terminals. The first version looked like this:
 
@@ -65,7 +65,7 @@ A blocklist is playing whack-a-mole with an infinite number of holes.
 
 ## The better fix: allowlist
 
-Flip the model. Instead of asking "what should we block?", ask "what does a subprocess actually need?"
+Flip the model. Instead of asking "what should I block?", ask "what does a subprocess actually need?"
 
 Turns out, not much. A shell needs to know where to find binaries (`PATH`), who the user is (`HOME`, `USER`), what language to use (`LANG`, `LC_*`), and where temp files go (`TMPDIR`). Development tools need their version manager directories (`NVM_DIR`, `VOLTA_HOME`, `CARGO_HOME`). That's roughly it.
 
@@ -103,7 +103,7 @@ Everything else — every API key, every token, every database URL — is droppe
 
 The allowlist alone would be enough if you trust it to never contain a secret. But what if someone adds `HOMEBREW_GITHUB_API_TOKEN` to the allowlist because "it's a Homebrew variable"? What if a future dev tool stores secrets in a variable that pattern-matches something on the list?
 
-So we run both. Blocklist takes precedence:
+So I run both. Blocklist takes precedence:
 
 ```typescript
 export const ENV_BLOCKLIST_PATTERNS: RegExp[] = [
@@ -171,9 +171,9 @@ These aren't secrets — they're control flow. If you only filter for patterns l
 | Allowlist only | All unknown vars | All unknown vars | Grows with every new tool | Medium — miss a var and something breaks |
 | Allowlist + blocklist | All unknown + known patterns | All, including allowlist mistakes | Both lists need maintenance | Medium, but safer |
 
-We went with the last option. The allowlist catches unknown threats. The blocklist catches mistakes in the allowlist.
+I went with the last option. The allowlist catches unknown threats. The blocklist catches mistakes in the allowlist.
 
-## What we actually ship
+## What I actually ship
 
 In Omniscribe's terminal service, every subprocess spawn goes through `buildSafeEnv()`:
 
@@ -187,7 +187,7 @@ const finalEnv: Record<string, string> = {
 };
 ```
 
-The function lives in a shared package (`@omniscribe/shared`) so both the desktop app and provider plugins use the same implementation. When we started building [GitChorus](https://github.com/Shironex/gitchorus) — a separate Electron app that also spawns AI agents — we identified this as a day-one requirement in the [pitfalls research](https://github.com/Shironex/gitchorus/blob/main/.planning/research/PITFALLS.md) and ported the same code.
+The function lives in a shared package (`@omniscribe/shared`) so both the desktop app and provider plugins use the same implementation. When I started building [GitChorus](https://github.com/Shironex/gitchorus) — a separate Electron app that also spawns AI agents — I identified this as a day-one requirement in the [pitfalls research](https://github.com/Shironex/gitchorus/blob/main/.planning/research/PITFALLS.md) and ported the same code.
 
 The recovery cost column from that research document tells the real story:
 
@@ -244,4 +244,4 @@ If a new variable needs to pass through, you add it to the allowlist and the tes
 
 5. **AI agents change the threat model.** A deterministic subprocess probably won't read its own environment and exfiltrate it. An LLM-powered agent might, especially under prompt injection. Treat agent subprocesses as untrusted.
 
-6. **Do this on day one.** The recovery cost of "we shipped and secrets leaked" is credential rotation across every user who ran the app. The prevention cost is a 140-line utility with tests.
+6. **Do this on day one.** The recovery cost of shipping with leaked secrets is credential rotation across every user who ran the app. The prevention cost is a 140-line utility with tests.

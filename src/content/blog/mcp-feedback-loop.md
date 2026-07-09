@@ -1,6 +1,6 @@
 ---
 title: 'The AI Reports Its Own State: MCP as a Feedback Loop'
-description: 'Instead of parsing terminal output to figure out what an AI agent is doing, we gave it a tool to tell us. Here is how MCP creates a real-time feedback loop.'
+description: 'Instead of parsing terminal output to figure out what an AI agent is doing, I gave it a tool to tell me. Here is how MCP creates a real-time feedback loop.'
 pubDate: '2026-03-13'
 tags: ['mcp', 'omniscribe', 'ai']
 ---
@@ -15,7 +15,7 @@ The first instinct is to watch stdout. Claude Code prints status lines — you c
 
 This breaks immediately. The output format isn't a contract. It changes between versions. It's interleaved with tool results, code blocks, markdown formatting. Some status lines look like code. Some code looks like status lines. You'd be maintaining a fragile parser that breaks on every CLI update.
 
-We needed something that works regardless of what the terminal prints.
+I needed something that works regardless of what the terminal prints.
 
 ## The insight: let the AI tell you
 

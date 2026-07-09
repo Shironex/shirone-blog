@@ -1,9 +1,12 @@
 FROM node:22-alpine AS base
-RUN corepack enable && corepack prepare pnpm@10.9.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.26.2 --activate
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
+# pnpm-workspace.yaml carries the overrides config the lockfile was
+# resolved against — without it --frozen-lockfile fails with
+# ERR_PNPM_LOCKFILE_CONFIG_MISMATCH
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM base AS build

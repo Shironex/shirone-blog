@@ -12,20 +12,20 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "@astrojs/mdx": "^6.0.3",
     "@astrojs/react": "^5.0.7",
-    "@astrojs/rss": "^4.0.18",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/typography": "^0.5.20",
-    "@tailwindcss/vite": "^4.3.1",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "astro": "^6.4.8",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "sharp": "^0.34.5",
-    "tailwindcss": "^4.3.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   }
 }

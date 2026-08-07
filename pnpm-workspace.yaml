@@ -3,8 +3,9 @@ overrides:
   devalue: ">=5.8.1"
   vite: "7.3.5"
   esbuild: ">=0.28.1"
-  js-yaml: ">=4.2.0"
+  js-yaml: ">=4.3.1 <5.0.0"
   "@babel/core": ">=7.29.1"
+  sharp: ">=0.35.3"
 
 onlyBuiltDependencies:
   - esbuild

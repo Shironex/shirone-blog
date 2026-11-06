@@ -17,5 +17,7 @@ RUN pnpm build
 FROM node:22-alpine AS production
 RUN npm install -g serve@14
 COPY --from=build /app/dist /app
+RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
+USER 10001:10001
 EXPOSE 3000
 CMD ["serve", "/app", "-l", "3000"]

@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://shirone.blog',
+  site: 'https://blog.shirone.dev',
   integrations: [mdx(), sitemap(), react()],
   markdown: {
     shikiConfig: {
